@@ -7,32 +7,69 @@ const errorEl = document.getElementById('error');
 
 let page = 0; const hitsPerPage = 20; let lastQuery = '';
 
-async function fetchSearch(query, pageNum=0){
-  errorEl.style.display='none';
-  try{
+async function fetchSearch(query, pageNum = 0) {
+  errorEl.style.display = 'none';
+  try {
+    const appId = 'BJO80TXNGN';
+    // REPLACE THIS with your "Search-Only API Key" from the Algolia dashboard!
+    // NEVER put the Admin API Key here.
+    const searchApiKey = '05b2a715dcd158aaf33f80429093dc45'; 
+    const indexName = 'movies';
+
     const genre = document.getElementById('filterGenre').value || '';
     const year = document.getElementById('filterYear').value || '';
     const minRating = document.getElementById('filterMinRating').value || '';
-    const params = new URLSearchParams({ q: query, page: pageNum, hitsPerPage: hitsPerPage });
-    if(genre) params.set('genre', genre);
-    if(year) params.set('year', year);
-    if(minRating) params.set('minRating', minRating);
-    const url = `api_search.php?${params.toString()}`;
-    const res = await fetch(url);
-    if(!res.ok){
-      const txt = await res.text();
-      throw new Error('Server error: '+txt);
+
+    // Build Algolia filters strings just like your PHP did
+    let filters = [];
+    if (genre) filters.push(`genre:"${genre}"`);
+    if (year) filters.push(`year=${year}`);
+    if (minRating) filters.push(`rating>=${minRating}`);
+
+    // Construct the query parameters Algolia expects
+    const algoliaParams = new URLSearchParams({
+      query: query,
+      page: pageNum,
+      hitsPerPage: hitsPerPage,
+      facets: '["genre", "year"]',
+      typoTolerance: 'false'
+    });
+    
+    if (filters.length > 0) {
+      algoliaParams.append('filters', filters.join(' AND '));
     }
+
+    // Call Algolia's direct REST API
+    const url = `https://${appId}-dsn.algolia.net/1/indexes/${indexName}/query`;
+    
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-Algolia-Application-Id': appId,
+        'X-Algolia-API-Key': searchApiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        params: algoliaParams.toString()
+      })
+    });
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error('Algolia error: ' + txt);
+    }
+    
     const data = await res.json();
-    if(data.error){ throw new Error(data.error); }
     return data;
-  }catch(err){
+    
+  } catch (err) {
     errorEl.textContent = err.message;
-    errorEl.style.display='block';
+    errorEl.style.display = 'block';
     console.error(err);
     return null;
   }
 }
+
 
 function posterFor(hit){
   return hit.poster || hit.poster_url || hit.posterUrl || hit.image || hit.picture || (hit.poster_path?`https://image.tmdb.org/t/p/w500${hit.poster_path}`:null) || 'https://via.placeholder.com/400x600?text=No+Poster';
