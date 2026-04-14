@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CineSearch</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>CineSearch</h1>
+      <p>Search movies by title, genre, year, overview, and rating.</p>
+      <div class="search-row">
+        <input id="q" type="search" placeholder="Search movies..." autocomplete="off">
+        <button id="searchBtn" class="btn-primary">Search</button>
+      </div>
+      <div class="filters-row" style="margin-top:12px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <select id="filterGenre" class="filter-select">
+          <option value="">All genres</option>
+        </select>
+        <select id="filterYear" class="filter-select">
+          <option value="">All years</option>
+        </select>
+        <select id="filterMinRating" class="filter-select">
+          <option value="">Min rating</option>
+        </select>
+        <button id="applyFilters" class="btn-primary" style="background:#0ea5e9">Apply Filters</button>
+      </div>
+      <div id="error" class="error" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="stats" class="stats"></div>
+    <div id="hits" class="grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </main>
+
+  <!-- Modal for movie details -->
+  <div id="modal" class="modal" style="display:none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel">
+      <button id="modalClose" class="page-btn" style="float:right">Close</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
