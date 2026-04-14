@@ -13,7 +13,7 @@ async function fetchSearch(query, pageNum = 0) {
     const appId = 'BJO80TXNGN';
     // REPLACE THIS with your "Search-Only API Key" from the Algolia dashboard!
     // NEVER put the Admin API Key here.
-    const searchApiKey = '05b2a715dcd158aaf33f80429093dc45'; 
+    const searchApiKey = 'c4b4e0eb37892642b725a2787989caf6'; 
     const indexName = 'movies';
 
     const genre = document.getElementById('filterGenre').value || '';
